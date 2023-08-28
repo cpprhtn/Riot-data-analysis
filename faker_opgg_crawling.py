@@ -12,13 +12,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-faker_opgg_url = 'https://www.op.gg/summoner/userName=Hide%20on%20bush'
+faker_opgg_url = 'https://www.op.gg/summoners/kr/Hide%20on%20bush'
 
 options = Options()
+# Chrome WebDriver의 경로를 설정합니다.
+# webdriver_path = '/Users/cpprhtn/Downloads/chromedriver-mac-arm64/chromedriver'
 
-driver = webdriver.Chrome(
-     options=options
-     )
+# Chrome WebDriver 인스턴스를 생성합니다.
+driver = webdriver.Safari()
+
+# driver = webdriver.Chrome(
+#     # executable_path=webdriver_path,
+#     options=options
+#     )
 driver.get(faker_opgg_url)
 driver.maximize_window()
 # wait = WebDriverWait(driver, 1)
@@ -28,8 +34,8 @@ driver.maximize_window()
 while True:
     try:
         driver.find_element_by_css_selector('.more').click()
-        # 게임 로딩, html 코드 변경까지 여유 시간을 1초 가집니다.
-        time.sleep(1)
+        # 게임 로딩, html 코드 변경까지 여유 시간을 3초 가집니다.
+        time.sleep(3)
         
     # 에러가 나면(페이지에서 '더 보기' 버튼이 없을 경우) while문을 탈출합니다.
     except Exception as e:
@@ -43,7 +49,12 @@ faker_total_html = driver.page_source
 driver.quit()
 
 faker_total_soup = BeautifulSoup(faker_total_html, 'html.parser')
-print(faker_total_soup)
+# print(faker_total_soup)
+
+with open('test.txt', 'w', encoding='utf-8') as file:
+    # 파일에 문자열을 씁니다.
+    file.write(str(faker_total_soup))
+
 
 # 결과가 들어갈 빈 리스트를 만듭니다.
 faker_champions = []
@@ -53,7 +64,10 @@ faker_assists = []
 faker_results = []
 
 # 전체 html 코드 중 우리가 원하는 selector를 만족하는 것만 가져오기
-faker_total_games_html = faker_total_soup.select('div.css-164r41r.esvl4yu0 div.game-content')
+faker_total_games_html = faker_total_soup.select('li.css-14gxetn.e11101my1')
+# print(faker_total_games_html)
+print(faker_total_games_html)
+
 
 # 그렇게 가져온 html 코드의 element 개수 == 끝까지 로딩된 모든 게임 수 출력
 total_game_len = len(faker_total_games_html)
